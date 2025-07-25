@@ -26,7 +26,7 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
-.WithOrigins("http://localhost:5001", "https://localhost:5001"));
+.WithOrigins("http://localhost:3000", "https://localhost:3000"));
 
 app.MapControllers();
 
