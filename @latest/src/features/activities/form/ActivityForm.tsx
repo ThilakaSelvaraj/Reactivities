@@ -1,13 +1,15 @@
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import type { FormEvent } from "react";
+import { useActivities } from "../../../lib/hooks/useActivities";
 
 type Props={
   closeForm:()=>void
   activity?:Activity
-  submitForm:(activity:Activity)=>void
 }
 
-export default function ActivityForm({closeForm,activity,submitForm}:Props) {
+export default function ActivityForm({closeForm,activity}:Props) {
+
+  const {updateActivity,createActicvity}=useActivities()
 
   const handleSubmit=(event:FormEvent<HTMLFormElement>)=>{
     event.preventDefault();
@@ -18,9 +20,18 @@ export default function ActivityForm({closeForm,activity,submitForm}:Props) {
     formData.forEach((value,key)=>{
       data[key]=value;
     })
-    console.log(data);
-    if(activity) data.id=activity.id
-    submitForm(data as unknown as Activity)
+    if(activity)
+      { 
+        data.id=activity.id;
+        updateActivity.mutate(data as unknown as Activity)
+        closeForm()
+      }
+      else
+      {
+        createActicvity.mutate(data as unknown as Activity)
+        closeForm()
+      }
+    // submitForm(data as unknown as Activity)
     
   }
 
@@ -31,12 +42,14 @@ export default function ActivityForm({closeForm,activity,submitForm}:Props) {
             <TextField name="title" label='Title' defaultValue={activity?.title} />
             <TextField name='description' label='Description' defaultValue={activity?.description} multiline  rows={3}/>
             <TextField name="category" label='Category' defaultValue={activity?.category} />
-            <TextField name="date" label='Date' type="date" defaultValue={activity?.date} />
+            <TextField name="date" label='Date' type="date" defaultValue={activity?.date?
+              new Date(activity.date).toISOString().split('T')[0]:new Date()
+            } />
             <TextField name="city" label='City'  defaultValue={activity?.city}/>
             <TextField name="venue" label='Venue' defaultValue={activity?.venue} />
-            <Box display='flex' flexDirection={'column'} gap={3} >
+            <Box display='flex' justifyContent={'end'} gap={3} >
                 <Button color="inherit" onClick={closeForm} >Cancel</Button>
-                <Button type="submit" color="success" variant="contained" >Submit</Button>
+                <Button type="submit" color="success" variant="contained" disabled={updateActivity.isPending || createActicvity.isPending} >Submit</Button>
             </Box>
         </Box>
     </Paper>
