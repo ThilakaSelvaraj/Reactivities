@@ -1,34 +1,26 @@
 // import './App.css'
-import { Box, Container, CssBaseline, Typography } from '@mui/material';
+import { Box, Container, CssBaseline } from '@mui/material';
 import NavBar from './NavBar';
-import { useActivities } from '../../lib/hooks/useActivities';
-import { Outlet } from 'react-router';
+import { Outlet, useLocation } from 'react-router';
+import Home from '../../features/home/Home';
 
 function App() {
 
-  // const [activities,setActivities]=useState<Activity[]>([]);
-
-  const {activities, isPending} = useActivities();
-
- 
-
-
- 
+  const location = useLocation();
 
   return (
     <>
-      <Box sx={{ bgcolor: '#eeee' ,minHeight:'100vh'}}>
+      <Box sx={{ bgcolor: '#eeee', minHeight: '100vh' }}>
         <CssBaseline />
-        <NavBar />
-        <Container maxWidth='xl' sx={{ mt: 3 }}>
-          {!activities || isPending ? (
-            <Typography>Loading...</Typography>
-          ) : (
-            // <Dashboard  />
-            <Outlet />
-          )}
+        {location.pathname === '/' ? <Home /> : (
+          <>
+            <NavBar />
+            <Container maxWidth='xl' sx={{ mt: 3 }}>
+              <Outlet />
+            </Container>
+          </>
+        )}
 
-        </Container>
       </Box>
 
     </>
